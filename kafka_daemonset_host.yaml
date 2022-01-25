@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ngd-kafka-kafka
+  labels:
+    name: ngd-kafka-kafka
+spec:
+  selector:
+    matchLabels:
+      name: ngd-kafka-kafka
+  template:
+    metadata:
+      labels:
+        name: ngd-kafka-kafka
+    spec:
+      hostNetwork: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: NotIn
+                    values:
+                      - arm64
+      containers:
+        - name: ngd-kafka-kafka
+          image: 10.1.1.1:27443/ngd-kafka:0.0.1
+          imagePullPolicy: Always
+          env:
+            - name: SERVICE
+              value: KAFKA
+          ports:
+            - containerPort: 9092
